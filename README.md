@@ -19,7 +19,8 @@ Server run on localhost:1234
  **GET** 
  
 - Без параметров (/api/users/) - возвращает список всех пользователей
->[
+```sh
+[
     {
 	        "id": 1,
 	        "name": "Tony",
@@ -34,17 +35,18 @@ Server run on localhost:1234
 	    }
 	    ...
 	]
-
+```
 
 - С параметром (/api/users/id/) - возвращает конкретного пользователя, если он есть в системе
 Пример:
->{
+```sh
+{
     "id": 2,
     "name": "Steven Rogers",
     "nickname": "Captain America",
     "email": "frozen@shield.com"
 }
-
+```
 ----------
 
 **POST** 
@@ -57,13 +59,14 @@ Server run on localhost:1234
 Возвращает объект созданного пользователя, если все поля были заполнены.
 
 Пример:
->{
+```sh
+{
     "id": 5,
     "name": "Peter Parker ",
     "nickname": "Spider-man",
     "email": "spideyrullez@gmail.com"
 }
-
+```
 
 ----------
 
@@ -72,13 +75,14 @@ Server run on localhost:1234
 Обновляет опльзователя с указанным id  (/api/users/id/) и полями которые нужно изменить у пользователя. Если пользователь не найден, статус 400
 Пример:
 >nickname=Mighty Hulk
->{
+```sh
+{
     "id": 3,
     "name": "Bruce Banner",
     "nickname": "Mighty Hulk",
     "email": "angry@smash.com"
 }
-
+```
 
 ----------
 
@@ -96,7 +100,8 @@ Server run on localhost:1234
  
 - Без параметров (/api/messages/) - возвращает список всех сообщений.
 Пример:
->[
+```sh
+[
     {
         "id": 1,
         "senderId": 2,
@@ -113,17 +118,18 @@ Server run on localhost:1234
     },
 	    ...
 	]
-
+```
 - С параметром (/api/messages/id/) - возвращает конкретное сообщение, если оно есть в системе
 Пример:
->{
+```sh
+{
     "id": 3,
     "senderId": 1,
     "receiverId": 3,
     "date": "",
     "messBody": "Dr. Banner, your work is unparalleled. And I'm a huge fan of the way you lose control and turn into an enormous green rage monster..."
 }
-
+```
 
 ----------
 
@@ -138,14 +144,15 @@ Server run on localhost:1234
 Возвращает объект сообщения , если все поля были заполнены.
 
 Пример:
->{
+```sh
+{
     "id": 6,
     "senderId": "1",
     "receiverId": "4",
     "messBody": "Avengers assemble",
     "date": 1500208658207
 }
-
+```
 
 ----------
 
@@ -153,11 +160,14 @@ Server run on localhost:1234
 **PUT**
 Обновляет сообщение с указанным id  (/api/messages/id/) и полями которые нужно изменить в сообщении. Если сообщение не найдено, статус 400.
 Пример:
->messBody=Avengers assemble! Quickly!!!!!
+```sh
+messBody=Avengers assemble! Quickly!!!!!
+```
 
 Response
->saved
-
+```sh
+saved
+```
 
 ----------
 
@@ -176,7 +186,8 @@ Response
 Пример:
 >/api/receivers/1/
 
->[
+```sh
+[
     {
         "id": 2,
         "name": "Steven Rogers",
@@ -196,3 +207,4 @@ Response
         "email": "god@loreal.com"
     }
 ]
+```
