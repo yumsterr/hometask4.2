@@ -3,7 +3,9 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.send('ok');
+    let err = new Error('Forbidden');
+    err.status = 403;
+    next(err);
 });
 
 module.exports = router;
