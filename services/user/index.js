@@ -43,7 +43,7 @@ class User {
             }
             return false;
         });
-        if(!user){
+        if (!user) {
             err = new Error('User not Found');
             err.status = 400;
         }
@@ -51,11 +51,22 @@ class User {
     }
 
     add(data) {
-        let usersCount = this.users.length - 1;
-        let lastId = this.users[usersCount].id;
-        data.id = lastId + 1;
-        this.users.push(data);
-        return true;
+        let err = false;
+        if (data.name && data.nickname && data.email) {
+            let usersCount = this.users.length - 1;
+            let lastId = this.users[usersCount].id;
+            let newUser = {
+                id: lastId + 1,
+                name: data.name,
+                nickname: data.nickname,
+                email: data.email,
+            };
+            this.users.push(newUser);
+        } else {
+            err = new Error('Wrong data');
+            err.status = 400;
+        }
+        return {err};
     }
 
     delete(id) {

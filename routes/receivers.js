@@ -10,18 +10,17 @@ router.get('/', function (req, res, next) {
 
     res.send('receivers');
 });
-router.get('/:id', function (req, res, next) {
-    let {resieversIDs} = Messages.findBySender(Number(req.params.id));
-    if (resieversIDs.length) {
+router.get('/:id', function (req, res, next) { //http://localhost:1234/api/receivers/1/
+    let {resieversIDs, err} = Messages.findBySender(Number(req.params.id));
+    if (!err) {
         let recievers = [];
         for (let i = 0; i < resieversIDs.length; i++) {
             let {user} = User.findOne(resieversIDs[i]);
             recievers.push(user);
         }
-        console.log(recievers);
         res.send(recievers);
     } else {
-        next('Recievers not found');
+        next(err);
     }
 });
 

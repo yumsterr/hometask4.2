@@ -8,23 +8,34 @@ router.get('/', function (req, res, next) {
     let mess = Messages.find();
     res.send(mess);
 });
-router.get('/:id', function (req, res, next) {
-    let {mess} = Messages.findOne(Number(req.params.id));
-    res.send(mess);
+router.get('/:id', function (req, res, next) { //http://localhost:1234/api/messages/2/
+    let {mess, err} = Messages.findOne(Number(req.params.id));
+    if (!err)
+        res.send(mess);
+    else
+        next(err);
 });
-router.post('/', function (req, res, next) { //http://localhost:1234/api/users/?name=Peter Parker&nickname=Spider-man&email=spideyrullez@gmail.com
-    let result = Messages.add(req.query);
-    res.send(result);
+router.post('/', function (req, res, next) { //http://localhost:1234/api/messages/?senderId=4&receiverId=3&messBody=You're a Friend from Work!
+    let {err} = Messages.add(req.query);
+    if (!err)
+        res.send('Message saved');
+    else {
+        next(err);
+    }
 });
-router.put('/:id', function (req, res, next) { //http://localhost:1234/api/users/3/?name=Mighty Hulk
-    let update = Messages.update(Number(req.params.id), req.query);
-    if(update)
-      res.send('saved');
+router.put('/:id', function (req, res, next) { //http://localhost:1234/api/messages/3/?senderId=4
+    let {update, err} = Messages.update(Number(req.params.id), req.query);
+    if (!err)
+        res.send('saved');
+    else
+        next(err);
 });
-router.delete('/:id', function (req, res, next) { //http://localhost:1234/api/users/4/
-    let del = Messages.delete(Number(req.params.id));
-    if(del)
+router.delete('/:id', function (req, res, next) { //http://localhost:1234/api/messages/4/
+    let {del, err} = Messages.delete(Number(req.params.id));
+    if (!err)
         res.send('deleted');
+    else
+        next(err);
 });
 
 module.exports = router;

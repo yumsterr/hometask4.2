@@ -15,8 +15,12 @@ router.get('/:id', function (req, res, next) {
         next(err);
 });
 router.post('/', function (req, res, next) { //http://localhost:1234/api/users/?name=Peter Parker&nickname=Spider-man&email=spideyrullez@gmail.com
-    let result = Users.add(req.query);
-    res.send(result);
+    let {err} = Users.add(req.query);
+    if (!err)
+        res.send('User saved');
+    else {
+        next(err);
+    }
 });
 router.put('/:id', function (req, res, next) { //http://localhost:1234/api/users/3/?nickname=Mighty Hulk
     let {user, err} = Users.update(Number(req.params.id), req.query);

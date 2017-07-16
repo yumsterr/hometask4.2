@@ -39,6 +39,7 @@ class Messages {
 
     findOne(id) {
         let messInd = false;
+        let err = false;
         let mess = this.messages.find(function (el, ind) {
             if (el.id === id) {
                 messInd = ind;
@@ -46,12 +47,17 @@ class Messages {
             }
             return false;
         });
-
-        return {mess, messInd};
+        if (!mess) {
+            err = new Error('Message not Found');
+            err.status = 400;
+        }
+        return {mess, messInd, err};
     }
+
     findBySender(id) {
         let messInd = false;
         let resieversIDs = [];
+        let err = false;
         let mess = this.messages.filter(function (el, ind) {
             if (el.senderId === id) {
                 resieversIDs.push(el.receiverId);
@@ -59,35 +65,51 @@ class Messages {
             }
             return false;
         });
+        if (!resieversIDs.length) {
+            err = new Error('Recievers not found');
+            err.status = 400;
+        }
 
-        return {mess, resieversIDs};
+        return {mess, resieversIDs, err};
     }
 
     add(data) {
-        let messagesCount = this.messages.length - 1;
-        let lastId = this.messages[messagesCount].id;
-        data.id = lastId + 1;
-        this.messages.push(data);
-        return true;
+        let err = false;
+        if (data.senderId && data.receiverId && data.messBody) {
+            let messagesCount = this.messages.length - 1;
+            let lastId = this.messages[messagesCount].id;
+            let newMessage = {
+                id:lastId + 1,
+                senderId: data.senderId,
+                receiverId: data.receiverId,
+                messBody: data.messBody,
+                date: Date.now()
+            };
+            this.messages.push(newMessage);
+        } else {
+            err = new Error('Wrong data');
+            err.status = 400;
+        }
+        return {err};
     }
 
     delete(id) {
-        let {messInd} = this.findOne(id);
+        let {messInd, err} = this.findOne(id);
         if (messInd) {
             this.messages.splice(messInd, 1);
             return true;
         } else {
-            return false;
+            return {err};
         }
     }
 
     update(id, data) {
-        let {messInd} = this.findOne(id);
+        let {messInd, err} = this.findOne(id);
         if (messInd) {
             this.messages[messInd] = Object.assign(this.messages[messInd], data);
             return true;
         } else {
-            return false;
+            return {err};
         }
     }
 
