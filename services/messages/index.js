@@ -91,8 +91,8 @@ class Messages {
             let lastId = this.messages[messagesCount].id;
             newMessage = {
                 id:lastId + 1,
-                senderId: data.senderId,
-                receiverId: data.receiverId,
+                senderId: Number(data.senderId),
+                receiverId: Number(data.receiverId),
                 messBody: data.messBody,
                 date: Date.now()
             };

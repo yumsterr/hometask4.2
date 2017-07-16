@@ -16,7 +16,7 @@ router.get('/:id', function (req, res, next) { //http://localhost:1234/api/messa
         next(err);
 });
 router.post('/', function (req, res, next) { //http://localhost:1234/api/messages/?senderId=4&receiverId=3&messBody=You're a Friend from Work!
-    let {err, newMessage} = Messages.add(req.query);
+    let {err, newMessage} = Messages.add(req.body);
     if (!err)
         res.send(newMessage);
     else {
@@ -24,7 +24,7 @@ router.post('/', function (req, res, next) { //http://localhost:1234/api/message
     }
 });
 router.put('/:id', function (req, res, next) { //http://localhost:1234/api/messages/3/?senderId=4
-    let {update, err} = Messages.update(Number(req.params.id), req.query);
+    let {update, err} = Messages.update(Number(req.params.id), req.body);
     if (!err)
         res.send('saved');
     else
