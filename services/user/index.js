@@ -52,10 +52,11 @@ class User {
 
     add(data) {
         let err = false;
+        let newUser = {};
         if (data.name && data.nickname && data.email) {
             let usersCount = this.users.length - 1;
             let lastId = this.users[usersCount].id;
-            let newUser = {
+            newUser = {
                 id: lastId + 1,
                 name: data.name,
                 nickname: data.nickname,
@@ -66,7 +67,7 @@ class User {
             err = new Error('Wrong data');
             err.status = 400;
         }
-        return {err};
+        return {err, newUser};
     }
 
     delete(id) {

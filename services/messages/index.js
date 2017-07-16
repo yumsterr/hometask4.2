@@ -76,7 +76,7 @@ class Messages {
         });
         resieversIDs = Array.from(new Set(resieversIDs));
         if (!resieversIDs.length) {
-            err = new Error('Recievers not found');
+            err = new Error('Receivers not found');
             err.status = 400;
         }
 
@@ -85,10 +85,11 @@ class Messages {
 
     add(data) {
         let err = false;
+        let newMessage = {};
         if (data.senderId && data.receiverId && data.messBody) {
             let messagesCount = this.messages.length - 1;
             let lastId = this.messages[messagesCount].id;
-            let newMessage = {
+            newMessage = {
                 id:lastId + 1,
                 senderId: data.senderId,
                 receiverId: data.receiverId,
@@ -100,7 +101,7 @@ class Messages {
             err = new Error('Wrong data');
             err.status = 400;
         }
-        return {err};
+        return {err, newMessage};
     }
 
     delete(id) {

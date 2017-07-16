@@ -15,9 +15,9 @@ router.get('/:id', function (req, res, next) { //http://localhost:1234/api/users
         next(err);
 });
 router.post('/', function (req, res, next) { //http://localhost:1234/api/users/?name=Peter Parker&nickname=Spider-man&email=spideyrullez@gmail.com
-    let {err} = Users.add(req.query);
+    let {err, newUser} = Users.add(req.query);
     if (!err)
-        res.send('User saved');
+        res.send(newUser);
     else {
         next(err);
     }
