@@ -25,6 +25,12 @@ const messList = [{
     receiverId: 1,
     date: "",
     messBody: "Thanks."
+}, {
+    id: 5,
+    senderId: 4,
+    receiverId: 1,
+    date: "",
+    messBody: "Thanks."
 }
 ];
 
@@ -62,9 +68,13 @@ class Messages {
             if (el.senderId === id) {
                 resieversIDs.push(el.receiverId);
                 return true;
+            } else if (el.receiverId === id){
+                resieversIDs.push(el.senderId);
+                return true;
             }
             return false;
         });
+        resieversIDs = Array.from(new Set(resieversIDs));
         if (!resieversIDs.length) {
             err = new Error('Recievers not found');
             err.status = 400;

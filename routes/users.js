@@ -7,7 +7,7 @@ router.get('/', function (req, res, next) {
     let users = Users.find();
     res.send(users);
 });
-router.get('/:id', function (req, res, next) {
+router.get('/:id', function (req, res, next) { //http://localhost:1234/api/users/2/
     let {user, err} = Users.findOne(Number(req.params.id));
     if (!err)
         res.send(user);
