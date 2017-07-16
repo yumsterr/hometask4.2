@@ -6,7 +6,9 @@
 **Install**
 
 npm install
+
 npm start
+
 Server run on localhost:1234
 
 ---
