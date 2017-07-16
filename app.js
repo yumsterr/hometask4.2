@@ -31,7 +31,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.send(err);
+  res.send(err.message);
 });
 
 const server = app.listen(1234);

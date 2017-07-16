@@ -35,6 +35,7 @@ class User {
 
     findOne(id) {
         let userInd = false;
+        let err = false;
         let user = this.users.find(function (el, ind) {
             if (el.id === id) {
                 userInd = ind;
@@ -42,8 +43,11 @@ class User {
             }
             return false;
         });
-
-        return {user, userInd};
+        if(!user){
+            err = new Error('User not Found');
+            err.status = 400;
+        }
+        return {user, userInd, err};
     }
 
     add(data) {
@@ -55,22 +59,23 @@ class User {
     }
 
     delete(id) {
-        let {userInd} = this.findOne(id);
+        let {userInd, err} = this.findOne(id);
         if (userInd) {
             this.users.splice(userInd, 1);
             return true;
         } else {
-            return false;
+            return {err};
         }
     }
 
     update(id, data) {
-        let {userInd} = this.findOne(id);
+        let {userInd, err} = this.findOne(id);
         if (userInd) {
             this.users[userInd] = Object.assign(this.users[userInd], data);
-            return true;
+            let user = this.users[userInd];
+            return {user};
         } else {
-            return false;
+            return {err};
         }
     }
 
