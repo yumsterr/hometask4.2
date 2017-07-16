@@ -6,11 +6,7 @@ var router = express.Router();
 const Messages = require('../services/messages');
 const User = require('../services/user');
 
-router.get('/', function (req, res, next) {
-
-    res.send('receivers');
-});
-router.get('/:id', function (req, res, next) { //http://localhost:1234/api/receivers/1/
+router.get('/:id', function (req, res, next) { //
     let {resieversIDs, err} = Messages.findBySender(Number(req.params.id));
     if (!err) {
         let recievers = [];
