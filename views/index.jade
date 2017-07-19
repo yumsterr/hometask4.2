@@ -1,0 +1,79 @@
+extends layout
+
+block content
+  h3.head
+    .welcome Welcome to #{title}
+    .userName
+  a.waves-effect.waves-light.btn#logout Logout
+
+  .row.online-users
+    h5 Online users
+    .list
+
+  .row.chatContainer
+    .col.s8.offset-s2
+      .mess-list
+
+
+  .row.chatForms
+    form.col.s10.offset-s1.hidden#chatForm
+      .row
+        .input-field.col.s12
+            textarea#message.materialize-textarea(name='message')
+            label(for='message') Your message
+            button.btn.waves-effect.waves-light(type='submit', name='action')
+              | Send
+              i.material-icons.right send
+
+
+      //.row
+
+  .my-modal.auth.hidden
+    .modal-form
+      form.col.s10.offset-s1#authForm
+        .row
+          .input-field.col.s6
+            input#name.validate(type='text', name='name')
+            label(for='name') Name
+          .input-field.col.s6
+            input#nickname.validate(type='text', name='nickname')
+            label(for='nickname') NickName
+          .input-field.col.s12
+            button.btn.waves-effect.waves-light(type='submit', name='action')
+              | Save
+              i.material-icons.right send
+
+
+  .loader.active
+    .preloader-wrapper.big.active
+      .spinner-layer.spinner-blue
+        .circle-clipper.left
+          .circle
+        .gap-patch
+          .circle
+        .circle-clipper.right
+          .circle
+      .spinner-layer.spinner-red
+        .circle-clipper.left
+          .circle
+        .gap-patch
+          .circle
+        .circle-clipper.right
+          .circle
+      .spinner-layer.spinner-yellow
+        .circle-clipper.left
+          .circle
+        .gap-patch
+          .circle
+        .circle-clipper.right
+          .circle
+      .spinner-layer.spinner-green
+        .circle-clipper.left
+          .circle
+        .gap-patch
+          .circle
+        .circle-clipper.right
+          .circle
+
+
+

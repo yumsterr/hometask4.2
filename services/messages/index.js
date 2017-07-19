@@ -1,6 +1,10 @@
 /**
  * Created by Yumster on 7/16/17.
  */
+
+var MessS = require('./../../models/message').Message;
+const Users = require('../user');
+
 const messList = [{
     id: 1,
     senderId: 2,
@@ -43,6 +47,58 @@ class Messages {
         return this.messages;
     }
 
+    getUsersInfo(data, callback) {
+        let userIDs = data.map(function (a) {
+            return a.userID;
+        });
+        let merged = [].concat.apply([], userIDs);
+        let uniqueIDs = Array.from(new Set(merged));
+        Users.findByID(uniqueIDs, function(err, data){
+            if(!err)
+                callback(err, data);
+            else
+                next(err);
+        });
+
+        return uniqueIDs;
+    }
+
+    getLastCount(count, callback) {
+        let err = false;
+        let messagesFound = MessS.find({}).limit(count);
+        messagesFound.exec(function (err, data) {
+            if (err) throw err;
+            callback(err, data);
+        });
+
+    }
+
+    getSincetime(date, callback) {
+        let err = false;
+        let findDate = new Date(date);
+        findDate.setDate(findDate.getDate());
+        let messagesFound = MessS.find({"dateCreated": {"$gte": findDate}});
+        messagesFound.exec(function (err, data) {
+            if (err) throw err;
+            callback(err, data);
+        });
+
+    }
+
+    getMessages(req, callback){
+        if (req.query.count) {
+            this.getLastCount(Number(req.query.count), function (err, data) {
+                "use strict";
+                callback(err, data);
+            });
+        } else if (req.query.date) {
+            this.getSincetime(Number(req.query.date), function (err, data) {
+                "use strict";
+                callback(err, data);
+            });
+        }
+    }
+
     findOne(id) {
         let messInd = false;
         let err = false;
@@ -68,7 +124,7 @@ class Messages {
             if (el.senderId === id) {
                 resieversIDs.push(el.receiverId);
                 return true;
-            } else if (el.receiverId === id){
+            } else if (el.receiverId === id) {
                 resieversIDs.push(el.senderId);
                 return true;
             }
@@ -83,25 +139,17 @@ class Messages {
         return {mess, resieversIDs, err};
     }
 
-    add(data) {
+    add(data, callback) {
         let err = false;
-        let newMessage = {};
-        if (data.senderId && data.receiverId && data.messBody) {
-            let messagesCount = this.messages.length - 1;
-            let lastId = this.messages[messagesCount].id;
-            newMessage = {
-                id:lastId + 1,
-                senderId: Number(data.senderId),
-                receiverId: Number(data.receiverId),
-                messBody: data.messBody,
-                date: Date.now()
-            };
-            this.messages.push(newMessage);
-        } else {
-            err = new Error('Wrong data');
-            err.status = 400;
-        }
-        return {err, newMessage};
+        var newMess = new MessS({
+            userID: data.userID,
+            text: data.message
+        });
+        newMess.save(function (err, mess, affected) {
+            if (err) throw err;
+            // userId = {id: user._id};
+            callback(err);
+        });
     }
 
     delete(id) {

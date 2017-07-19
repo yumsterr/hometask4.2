@@ -1,6 +1,11 @@
 /**
  * Created by Yumster on 7/16/17.
  */
+var UserS = require('./../../models/user').User;
+var mongoose = require('./../../lib/mongoose');
+var objID = mongoose.Types;
+
+
 const userList = [{
     id: 1,
     name: "Tony",
@@ -50,26 +55,60 @@ class User {
         return {user, userInd, err};
     }
 
-    add(data) {
+    findByID(IDs, callback){
         let err = false;
-        let newUser = {};
-        if (data.name && data.nickname && data.email) {
-            let usersCount = this.users.length - 1;
-            let lastId = this.users[usersCount].id;
-            newUser = {
-                id: lastId + 1,
-                name: data.name,
-                nickname: data.nickname,
-                email: data.email,
-            };
-            this.users.push(newUser);
-        } else {
-            err = new Error('Wrong data');
-            err.status = 400;
-        }
-        return {err, newUser};
+        // console.log(Object.assign({}, IDs));
+        let obj_ids = IDs.map(function(id) { if(id.length>0){return objID.ObjectId(id)} });
+        let users = UserS.find({_id: {$in: obj_ids}});
+        users.exec(function (err, users) {
+            if (err) throw err;
+            let data = [];
+            for(let prop in users) {
+                data[users[prop]['_id']] = users[prop];
+            }
+            callback(err, Object.assign({}, data));
+        });
     }
 
+    add(data, userData) {
+        let err = false;
+        let userId;
+        var newUser = new UserS({
+            nickname: data.nickname,
+            name: data.name
+        });
+        newUser.save(function (err, user, affected) {
+            if(err) throw err;
+            // userId = {id: user._id};
+            userData(err, JSON.stringify(user));
+        });
+
+        //id = newUser._id;
+        // let newUser = {};
+        // if (data.name && data.nickname && data.email) {
+        //     let usersCount = this.users.length - 1;
+        //     let lastId = this.users[usersCount].id;
+        //     newUser = {
+        //         id: lastId + 1,
+        //         name: data.name,
+        //         nickname: data.nickname,
+        //         email: data.email,
+        //     };
+        //     this.users.push(newUser);
+        // } else {
+        //     err = new Error('Wrong data');
+        //     err.status = 400;
+        // }
+    }
+
+    checkUserStatus(users){
+        for (let i in users){
+            if((Date.now() - users[i].wasActive) > 300000){
+                delete users[i];
+            }
+        }
+        return users;
+    }
     delete(id) {
         let {userInd, err} = this.findOne(id);
         if (userInd) {
@@ -90,8 +129,6 @@ class User {
             return {err};
         }
     }
-
-
 }
 
 

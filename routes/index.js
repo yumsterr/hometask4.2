@@ -3,9 +3,10 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    let err = new Error('Forbidden');
-    err.status = 403;
-    next(err);
+    res.render('index', {title: 'Chat'});
+    // let err = new Error('Forbidden');
+    // err.status = 403;
+    // next(err);
 });
 
 module.exports = router;

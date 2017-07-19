@@ -14,13 +14,16 @@ router.get('/:id', function (req, res, next) { //http://localhost:1234/api/users
     else
         next(err);
 });
-router.post('/', function (req, res, next) { //http://localhost:1234/api/users/?name=Peter Parker&nickname=Spider-man&email=spideyrullez@gmail.com
-    let {err, newUser} = Users.add(req.body);
-    if (!err)
-        res.send(newUser);
-    else {
-        next(err);
-    }
+router.post('/', function (req, res, next) {
+
+    Users.add(req.body, function (err, result) {
+        if (!err)
+            res.send(result);
+        else {
+            next(err);
+        }
+    });
+
 });
 router.put('/:id', function (req, res, next) { //http://localhost:1234/api/users/3/?nickname=Mighty Hulk
     let {user, err} = Users.update(Number(req.params.id), req.body);
