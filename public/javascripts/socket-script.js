@@ -8,11 +8,14 @@ let userID = getCookie("userID") || false;
 let userNick = getCookie("name");
 let allUsers = {};
 let onlineUsersList = {};
-
-let socket = io.connect({
-    query: {
+let query = {};
+if(userID){
+    query = {
         userID: userID
-    }
+    };
+}
+let socket = io.connect({
+    query: query
 });
 
 
@@ -34,6 +37,7 @@ logout.addEventListener('click', function () {
         deleteCookie("name");
     }
     // chatForm.classList.add('hidden');
+    socket.emit('userLeftUs', userID);
     document.querySelector('.my-modal.auth').classList.remove('hidden');
 
 });
@@ -172,6 +176,9 @@ let onlineUsers = (users) => {
             newUser.setAttribute('data-id', onlineUserID);
             onlineNode.appendChild(newUser);
             newUser.innerHTML = allUsers[i].name + " - " + allUsers[i].nickname;
+            if(allUsers[i].status == 'new'){
+                newUser.classList.add('new');
+            }
         }
     }
 };
@@ -239,10 +246,7 @@ socket.on('addMessage', function (data) {
     let messList = {};
     messList[data._id] = data;
     let userID = data.userID;
-    if (allUsers[userID]) {
-        onlineUsersList[userID] = allUsers[userID];
-        onlineUsers(onlineUsersList);
-    } else {
+    if (!allUsers[userID]) {
         socket.emit('getUserInfo', userID);
     }
     renderMessages(messList, false);
@@ -255,34 +259,30 @@ socket.on('showHistory', function (data) {
     let mess = data.mess;
     if (data.users)
         allUsers = Object.assign(allUsers, data.users);
-
-
+    
     renderMessages(mess, true);
 });
-socket.on('newUser', function (data) {
-    "use strict";
-    if (!data._id) {
-        data = JSON.parse(data);
-    }
-    console.log(data);
-    console.log('newUser');
-    if (!data._id) {
-        onlineUsersList = Object.assign(onlineUsersList, data);
-    } else {
-        onlineUsersList[data._id] = data;
-    }
-    allUsers[data._id] = data;
-    onlineUsers(onlineUsersList);
-});
-socket.on('disUser', function (data) {
+
+socket.on('setUsersOnline', function (data) {
     "use strict";
     data = JSON.parse(data);
-    // console.log(data);
-    console.log('del user');
-    console.log(data);
-    delete onlineUsersList[data.userID];
-    onlineUsers(onlineUsersList);
+    allUsers = Object.assign(allUsers, data);
+    onlineUsers(data);
 });
+
+socket.on('tellAboutLeaving', function (data) {
+    "use strict";
+
+    data = JSON.parse(data);
+    let offline = document.querySelector('.offline');
+    offline.classList.add('active');
+    offline.querySelector('p.userName').innerHTML = data.userName;
+    setTimeout(function(){
+        offline.classList.remove('active');
+    }, 3000);
+});
+
+
 
 socket.on('userTyping', function (data) {
     "use strict";
@@ -302,6 +302,7 @@ socket.on('userTyping', function (data) {
     }
 });
 
+socket.emit('getUsersOnline');
 
 socket.emit('history');
 
@@ -317,7 +318,7 @@ let loaderToggle = (state) => {
     }
 };
 
-if (userID !== undefined) {
+if (userID) {
     chatUser();
 
 } else {
