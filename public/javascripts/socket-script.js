@@ -38,16 +38,30 @@ authForm.addEventListener('submit', function (e) {
     "use strict";
     e.preventDefault();
 
-    let userName = document.querySelector('input#name').value;
-    let userNickName = document.querySelector('input#nickname').value;
-
+    let userName = document.querySelector('input#name');
+    let userNickName = document.querySelector('input#nickname');
+    // let userMessage = document.querySelector('textarea#message').value;
     let userData = {
-        name: userName,
-        nickname: userNickName,
+        name: userName.value,
+        nickname: userNickName.value,
         // message: userMessage
     };
-
-    socket.emit('saveUser', userData);
+    let error = false;
+    if (!userName.value) {
+        userName.classList.add('invalid');
+        error = true;
+    } else {
+        userName.classList.remove('invalid');
+    }
+    if (!userNickName.value) {
+        userNickName.classList.add('invalid');
+        error = true;
+    } else {
+        userNickName.classList.remove('invalid');
+    }
+    if (!error) {
+        socket.emit('saveUser', userData);
+    }
 
 
 });
@@ -68,8 +82,9 @@ chatForm.addEventListener('submit', function (e) {
         message: message.value
         // message: userMessage
     };
-
-    socket.emit('message', messageData);
+    if (message.value) {
+        socket.emit('message', messageData);
+    }
 
     message.value = "";
 });

@@ -33,26 +33,41 @@ logout.addEventListener('click', function () {
 authForm.addEventListener('submit', function (e) {
     "use strict";
     e.preventDefault();
-    let userName = document.querySelector('input#name').value;
-    let userNickName = document.querySelector('input#nickname').value;
+    let userName = document.querySelector('input#name');
+    let userNickName = document.querySelector('input#nickname');
     // let userMessage = document.querySelector('textarea#message').value;
     let userData = {
-        name: userName,
-        nickname: userNickName,
+        name: userName.value,
+        nickname: userNickName.value,
         // message: userMessage
     };
-    sendData("/api/users", userData, "POST", function (data) {
-        if (data._id) {
-            let date = new Date;
-            date.setDate(date.getDate() + 3);
-            userID = data._id;
-            userNick = userNickName;
-            document.cookie = "userID=" + data._id + "; path=/; expires=" + date;
-            document.cookie = "name=" + data.nickname + "; path=/; expires=" + date;
-            document.querySelector('.my-modal.auth').classList.add('hidden');
-            chatUser();
-        }
-    });
+    let error = false;
+    if (!userName.value) {
+        userName.classList.add('invalid');
+        error = true;
+    } else {
+        userName.classList.remove('invalid');
+    }
+    if (!userNickName.value) {
+        userNickName.classList.add('invalid');
+        error = true;
+    } else {
+        userNickName.classList.remove('invalid');
+    }
+    if (!error) {
+        sendData("/api/users", userData, "POST", function (data) {
+            if (data._id) {
+                let date = new Date;
+                date.setDate(date.getDate() + 3);
+                userID = data._id;
+                userNick = userNickName.value;
+                document.cookie = "userID=" + data._id + "; path=/; expires=" + date;
+                document.cookie = "name=" + data.nickname + "; path=/; expires=" + date;
+                document.querySelector('.my-modal.auth').classList.add('hidden');
+                chatUser();
+            }
+        });
+    }
 });
 
 chatForm.addEventListener('submit', function (e) {
@@ -68,15 +83,17 @@ chatForm.addEventListener('submit', function (e) {
         date: lastUpdateTime
         // message: userMessage
     };
-    sendData("/api/messages", messageData, "POST", function (data) {
-        renderMessages(data, false);
-        lastUpdateTime = Date.now();
-        document.body.scrollTop = document.body.scrollHeight;
+    if (message.value) {
+        sendData("/api/messages", messageData, "POST", function (data) {
+            renderMessages(data, false);
+            lastUpdateTime = Date.now();
+            document.body.scrollTop = document.body.scrollHeight;
 
-        pauseInterval = false;
-        //loadLastMessages(lastUpdateTime);
-    });
-    message.value = "";
+            pauseInterval = false;
+            //loadLastMessages(lastUpdateTime);
+        });
+        message.value = "";
+    }
 });
 
 let sendData = (path, data, method, callback) => {
@@ -104,16 +121,15 @@ let sendData = (path, data, method, callback) => {
 };
 
 
-
 let loadLastMessages = (date) => {
     "use strict";
     // loaderToggle('show');
     if (!date) {
-        sendData("/api/messages?count=100&userID="+userID, false, "GET", function (data) {
+        sendData("/api/messages?count=100&userID=" + userID, false, "GET", function (data) {
             renderMessages(data, true);
         });
     } else {
-        sendData("/api/messages?date=" + date+"&userID="+userID, false, "GET", function (data) {
+        sendData("/api/messages?date=" + date + "&userID=" + userID, false, "GET", function (data) {
             renderMessages(data, false);
         });
     }
@@ -183,13 +199,13 @@ let renderMessages = (data, all) => {
         // newMess
     }
     onlineNode.innerHTML = "";
-    for(let i in onlineUsers){
+    for (let i in onlineUsers) {
         let onlineUserID = i;
-        if(alUsers[i]){
+        if (alUsers[i]) {
             let newUser = document.createElement('div');
             // newUser.classList.add('message');
             onlineNode.appendChild(newUser);
-            newUser.innerHTML = alUsers[i].name+ " - "+ alUsers[i].nickname;
+            newUser.innerHTML = alUsers[i].name + " - " + alUsers[i].nickname;
         }
     }
 };
