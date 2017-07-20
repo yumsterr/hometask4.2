@@ -166,7 +166,6 @@ let renderMessages = (messages, all) => {
 
 let onlineUsers = (users) => {
     "use strict";
-    // console.log(users);
     let onlineNode = document.querySelector('.online-users .list');
     onlineNode.innerHTML = "";
     for (let i in users) {
@@ -176,9 +175,11 @@ let onlineUsers = (users) => {
             newUser.setAttribute('data-id', onlineUserID);
             onlineNode.appendChild(newUser);
             newUser.innerHTML = allUsers[i].name + " - " + allUsers[i].nickname;
-            if(allUsers[i].status == 'new'){
+
+            if((Date.now() - users[i].loginTime) <= 6000){
                 newUser.classList.add('new');
             }
+
         }
     }
 };
@@ -307,7 +308,6 @@ socket.emit('getUsersOnline');
 socket.emit('history');
 
 window.onbeforeunload = function () {
-    console.log('userLeftUs');
     socket.emit('userLeftUs', userID);
 };
 let loaderToggle = (state) => {
@@ -325,5 +325,9 @@ if (userID) {
     authUser();
 }
 
+setInterval(function () {
+    "use strict";
+    socket.emit('getUsersOnline');
+}, 1000);
 // loadLastMessages();
 loaderToggle('hide');

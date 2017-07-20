@@ -9,7 +9,6 @@ module.exports = function (server) {
         if (socket.handshake.query.userID) {
             let userID = socket.handshake.query.userID;
             if (userID) {
-                console.log('try find one');
                 Users.findOne(userID, function (err, data) {
                     let userData = {
                         loginTime: Date.now(),
@@ -40,8 +39,6 @@ module.exports = function (server) {
                         _id: data._id
                     };
                     onlineUsers[data._id] = userData;
-                    console.log(data.name);
-                    console.log(onlineUsers);
                     socket.emit("setUsersOnline", JSON.stringify(onlineUsers));
                     socket.broadcast.emit("setUsersOnline", JSON.stringify(onlineUsers));
                 }
@@ -95,7 +92,6 @@ module.exports = function (server) {
         });
         socket.on('getUsersOnline', function () {
             "use strict";
-            console.log(onlineUsers);
             socket.emit('setUsersOnline', JSON.stringify(onlineUsers));
 
         });
@@ -103,17 +99,8 @@ module.exports = function (server) {
         socket.on('disconnect', function () {
             console.log('user disconnected');
         });
+
+
     });
 };
 
-setInterval(function () {
-    "use strict";
-    for (let i in onlineUsers) {
-        let user = onlineUsers[i];
-        if ((Date.now() - user.loginTime) >= 60000 && user.status === 'new') {
-            onlineUsers[i].status = 'online';
-            console.log('online');
-            socket.broadcast.emit("setUsersOnline", JSON.stringify(onlineUsers));
-        }
-    }
-}, 1000);
