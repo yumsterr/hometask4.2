@@ -45,9 +45,9 @@ class User {
         users.exec(function (err, users) {
             if (err) throw err;
             let data = [];
-            for(let prop in users) {
-                data[users[prop]['_id']] = users[prop];
-            }
+            // for(let prop in users) {
+                data[users['_id']] = users;
+            // }
             callback(err, Object.assign({}, data));
         });
     }

@@ -4,12 +4,16 @@ let logout = document.querySelector('#logout');
 let loader = document.querySelector('.loader');
 let messageField = document.querySelector('textarea#message');
 let lastUpdateTime;
-let userID = getCookie("userID");
+let userID = getCookie("userID") || false;
 let userNick = getCookie("name");
 let allUsers = {};
 let onlineUsersList = {};
 
-let socket = io.connect();
+let socket = io.connect({
+    query: {
+        userID: userID
+    }
+});
 
 
 let chatUser = () => {
@@ -151,11 +155,14 @@ let renderMessages = (messages, all) => {
         //dateFormat.toLocaleDateString() + ' ' + dateFormat.toLocaleTimeString();
         // newMess
     }
+    if (all) {
+        document.body.scrollTop = document.body.scrollHeight;
+    }
 };
 
 let onlineUsers = (users) => {
     "use strict";
-    console.log(users);
+    // console.log(users);
     let onlineNode = document.querySelector('.online-users .list');
     onlineNode.innerHTML = "";
     for (let i in users) {
@@ -239,13 +246,12 @@ socket.on('addMessage', function (data) {
         socket.emit('getUserInfo', userID);
     }
     renderMessages(messList, false);
-    document.body.scrollTop = document.body.scrollHeight;
+
 });
 
 
 socket.on('showHistory', function (data) {
     "use strict";
-    console.log(data);
     let mess = data.mess;
     if (data.users)
         allUsers = Object.assign(allUsers, data.users);
@@ -255,19 +261,26 @@ socket.on('showHistory', function (data) {
 });
 socket.on('newUser', function (data) {
     "use strict";
-    allUsers[data._id] = data;
-    onlineUsersList[data._id] = data;
+    if (!data._id) {
+        data = JSON.parse(data);
+    }
     console.log(data);
     console.log('newUser');
-    console.log(onlineUsersList);
+    if (!data._id) {
+        onlineUsersList = Object.assign(onlineUsersList, data);
+    } else {
+        onlineUsersList[data._id] = data;
+    }
+    allUsers[data._id] = data;
     onlineUsers(onlineUsersList);
 });
 socket.on('disUser', function (data) {
     "use strict";
     data = JSON.parse(data);
+    // console.log(data);
+    console.log('del user');
     console.log(data);
-    let userID = data._id;
-    delete onlineUsersList[data._id];
+    delete onlineUsersList[data.userID];
     onlineUsers(onlineUsersList);
 });
 
@@ -285,13 +298,17 @@ socket.on('userTyping', function (data) {
             typingUser.classList.remove('typing');
         }, 2000);
     } else {
-        console.log('getUserInfo heeeelp');
         socket.emit('getUserInfo', data.userID);
     }
 });
 
 
 socket.emit('history');
+
+window.onbeforeunload = function () {
+    console.log('userLeftUs');
+    socket.emit('userLeftUs', userID);
+};
 let loaderToggle = (state) => {
     if (state === 'show') {
         loader.classList.add('active');
