@@ -12,6 +12,13 @@ npm start
 Server run on localhost:1234
 
 ---
+# XHR chat
+### /
+
+# Socket chat
+### /socket
+
+
 # Route user
 
 ### /api/users/
