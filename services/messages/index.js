@@ -65,9 +65,10 @@ class Messages {
 
     getLastCount(count, callback) {
         let err = false;
-        let messagesFound = MessS.find({}).limit(count);
+        let messagesFound = MessS.find({}).limit(count).sort('-dateCreated');
         messagesFound.exec(function (err, data) {
             if (err) throw err;
+            data.reverse();
             callback(err, data);
         });
 
@@ -148,7 +149,7 @@ class Messages {
         newMess.save(function (err, mess, affected) {
             if (err) throw err;
             // userId = {id: user._id};
-            callback(err);
+            callback(err, newMess);
         });
     }
 

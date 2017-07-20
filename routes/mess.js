@@ -21,8 +21,6 @@ router.get('/', function (req, res, next) {
             if (messages.length) {
                 Messages.getUsersInfo(messages, function (err, userInfo) {
                     "use strict";
-                    console.log(userInfo);
-
                     data.mess = messages;
                     data.user = userInfo;
                     data.online = onlineUsers;

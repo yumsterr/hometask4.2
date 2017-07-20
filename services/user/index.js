@@ -38,21 +38,18 @@ class User {
         return this.users;
     }
 
-    findOne(id) {
+    findOne(ID, callback) {
         let userInd = false;
         let err = false;
-        let user = this.users.find(function (el, ind) {
-            if (el.id === id) {
-                userInd = ind;
-                return true;
+        let users = UserS.findOne({_id: objID.ObjectId(ID)});
+        users.exec(function (err, users) {
+            if (err) throw err;
+            let data = [];
+            for(let prop in users) {
+                data[users[prop]['_id']] = users[prop];
             }
-            return false;
+            callback(err, Object.assign({}, data));
         });
-        if (!user) {
-            err = new Error('User not Found');
-            err.status = 400;
-        }
-        return {user, userInd, err};
     }
 
     findByID(IDs, callback){

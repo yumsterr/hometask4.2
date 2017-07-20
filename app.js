@@ -1,12 +1,16 @@
-var express = require('express');
-var path = require('path');
-var bodyParser = require('body-parser');
+let express = require('express');
+let path = require('path');
+let bodyParser = require('body-parser');
+
 // var db = require('./db');
 
-var index = require('./routes/index');
-var api = require('./routes/api');
+let index = require('./routes/index');
+let socket = require('./routes/socket');
+let api = require('./routes/api');
 
-var app = express();
+let app = express();
+
+let http = require('http').Server(app);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -17,6 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/', index);
+app.use('/socket', socket);
 app.use('/api', api);
 
 // catch 404 and forward to error handler
@@ -38,3 +43,5 @@ app.use(function(err, req, res, next) {
 });
 
 const server = app.listen(1234);
+
+require('./socket')(server);
